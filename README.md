@@ -1,2 +1,2 @@
-# maratang
+# mararithm
 Algorithm study
