@@ -1,31 +1,45 @@
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode(int x) { val = x; }
- * }
- */
 class Solution {
-    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
-        return sum(t1, t2);
+    Map<Integer, List<Integer>> courses;
+    int[] visited;
+    
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        courses = new HashMap<Integer, List<Integer>>();
+        visited = new int[numCourses]; // 0: 방문 안함, 1: 방문, 2: edge
+        
+        for (int[] i : prerequisites) {
+            if (courses.get(i[0]) == null) {
+                courses.put(i[0], new ArrayList());
+            }    
+            courses.get(i[0]).add(i[1]);
+        }
+        
+        for (int i = 0; i < numCourses; i++) {
+            if (!dfs(i))
+                return false;
+        }
+        
+        return true;
     }
     
-    public TreeNode sum(TreeNode t1, TreeNode t2) {
-        if (t1 == null && t2 == null)
-            return null;
-	// 하나의 node 존재 할 경우 
-	// 자식 노드들를 추가로 확인 하고 더해 줄 필요없이
-	// 해당 노드를 return 해 주면 됨
-        else if (t1 == null)
-            return t2;
-        else if (t2 == null)
-            return t1;
-
-        TreeNode node = new TreeNode(t1.val + t2.val);
-        node.left = sum(t1.left, t2.left);
-        node.right = sum(t1.right, t2.right);
-        return node;
+    public boolean dfs(int edge) {
+        if (visited[edge] == 1)
+            return false;
+        else if (visited[edge] == 2)
+            return true;
+        else if (courses.get(edge) == null) { // 해당 edge에서 연결된 edge가 없다는 것은 course의 마지막 지점이라는 것
+            visited[edge] = 2;
+            return true;
+        }
+        
+        visited[edge] = 1;
+        
+        for (int a : courses.get(edge))  
+// 애초에 a가 visited 1이면 dfs를 한번 더 안해줘도 될 것 같지만          
+// 실질적으로 메모리에 변화가 없어서 굳이 해주진 않음
+            if (!dfs(a))
+                return false;
+        
+        visited[edge] = 2;
+        return true;
     }
 }
